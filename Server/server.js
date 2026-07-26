@@ -9,22 +9,26 @@ import WIDGET_SCRIPT from './Configs/widgetScript.js';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
 
-
 dotenv.config();
 
-
-
-const app=express();
+const app = express();
 
 // Webhook needs raw body - register before json parser
 app.use('/api/billing/webhook', express.raw({ type: 'application/json' }));
 
 app.use(express.json());
 app.use(cookieParser());
+
+const allowedOrigins = [
+  'http://localhost:5173',
+  'http://localhost:5174',
+  process.env.CLIENT_URL,
+].filter(Boolean);
+
 app.use(cors({
-    origin:['http://localhost:5173','http://localhost:5174'],
-    credentials:true
-}))
+  origin: allowedOrigins,
+  credentials: true,
+}));
 
 // Widget needs to be embeddable
 app.use((req, res, next) => {
@@ -35,16 +39,14 @@ app.use((req, res, next) => {
 
 ConnectDB();
 
-const port=process.env.PORT || 5000;
+app.get('/', (req, res) => {
+  res.send('Hello from server');
+});
 
-app.get('/',(req,res)=>{
-    res.send("Hello from server");
-})
-
-app.use('/api/user',UserRouter);
-app.use('/api/newsletter',NewsletterRouter);
-app.use('/api/billing',BillingRouter);
-app.use('/api/agent',AgentRouter);
+app.use('/api/user', UserRouter);
+app.use('/api/newsletter', NewsletterRouter);
+app.use('/api/billing', BillingRouter);
+app.use('/api/agent', AgentRouter);
 
 // Serve widget script (no-cache so updates apply immediately)
 app.get('/widget.js', (req, res) => {
@@ -56,6 +58,13 @@ app.get('/widget.js', (req, res) => {
   res.send(WIDGET_SCRIPT);
 });
 
-app.listen(port,()=>{
+const port = process.env.PORT || 5000;
+
+// Only listen when run directly (not imported by Vercel serverless)
+if (process.env.VERCEL !== '1') {
+  app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
-})
+  });
+}
+
+export default app;
