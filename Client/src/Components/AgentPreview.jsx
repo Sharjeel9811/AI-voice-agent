@@ -72,15 +72,18 @@ const AgentPreview = ({ user, setuser }) => {
 
   const handleThemeChange = async (key) => {
     if (key === activeTheme) return;
+    setActiveTheme(key);
     setSwitching(true);
+    if (!user) {
+      setSwitching(false);
+      return;
+    }
     try {
-      const { data } = await axios.patch(
+      await axios.patch(
         `${import.meta.env.VITE_BACKEND_URL}/api/user/update`,
         { theme: key },
         { withCredentials: true }
       );
-      setuser(data.user);
-      setActiveTheme(key);
     } catch (err) {
       console.error("Theme update failed", err);
     } finally {
