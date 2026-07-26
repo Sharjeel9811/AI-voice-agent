@@ -9,6 +9,7 @@ import Billing from './pages/Billing'
 import PaymentSuccess from './pages/PaymentSuccess'
 import PaymentCancel from './pages/PaymentCancel'
 import Widget from './pages/Widget'
+import SiteWidget from './Components/SiteWidget'
 
 const App = () => {
 
@@ -44,6 +45,7 @@ const App = () => {
         <Route path='/payment-cancel' element={<PaymentCancel />} />
         <Route path='/widget' element={<Widget />} />
       </Routes>
+      <SiteWidget user={user} />
     </div>
   )
 }

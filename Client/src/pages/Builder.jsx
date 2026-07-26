@@ -53,8 +53,7 @@ const Builder = ({ user, setuser }) => {
           { withCredentials: true }
         )
         if (data.agent) {
-          setForm((prev) => ({ ...prev, ...data.agent }))
-          setHasSaved(true)
+          setForm((prev) => ({ ...prev, ...data.agent }));
         }
       } catch (err) {
         console.error('Failed to load config', err)
