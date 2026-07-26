@@ -13,16 +13,14 @@ dotenv.config();
 
 const app = express();
 
-// Webhook needs raw body - register before json parser
-app.use('/api/billing/webhook', express.raw({ type: 'application/json' }));
-
 // Parse JSON body manually (works on Vercel serverless)
+// Must be before the webhook raw body handler
 app.use((req, res, next) => {
-  if (req.body && typeof req.body === 'object' && Object.keys(req.body).length > 0) {
+  if (req.body && typeof req.body === 'object' && Object.keys(req.body).length > 0 && !(req.body instanceof Buffer)) {
     return next();
   }
   try {
-    if (typeof req.body === 'string') {
+    if (typeof req.body === 'string' && req.body.length > 0) {
       req.body = JSON.parse(req.body);
       return next();
     }
@@ -37,6 +35,9 @@ app.use((req, res, next) => {
   });
   req.on('error', () => { next(); });
 });
+
+// Webhook needs raw body
+app.use('/api/billing/webhook', express.raw({ type: 'application/json' }));
 app.use(cookieParser());
 
 const allowedOrigins = [
