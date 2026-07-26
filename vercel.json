@@ -1,0 +1,9 @@
+{
+  "buildCommand": "cd Client && npm ci && npm run build",
+  "outputDirectory": "Client/dist",
+  "rewrites": [
+    { "source": "/api/(.*)", "destination": "/api" },
+    { "source": "/widget.js", "destination": "/api" },
+    { "source": "/(.*)", "destination": "/index.html" }
+  ]
+}
