@@ -97,7 +97,7 @@ const AgentPreview = ({ user, setuser }) => {
     <div className="relative">
       {/* Theme Switcher */}
       <div
-        className="flex items-center gap-1.5 p-1.5 rounded-xl w-full sm:w-fit overflow-x-auto mb-4"
+        className="inline-flex items-center gap-1.5 p-1.5 rounded-xl overflow-x-auto mb-4 max-w-full"
         style={{
           background: theme.bg.card,
           border: `1px solid ${theme.border.light}`,
@@ -139,7 +139,7 @@ const AgentPreview = ({ user, setuser }) => {
           animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0, scale: 0.98 }}
           transition={{ duration: 0.3 }}
-          className="w-full max-w-sm rounded-2xl overflow-hidden"
+          className="w-full lg:max-w-[420px] rounded-2xl overflow-hidden"
           style={{
             background: isGradient ? t.bg : t.bg,
             border: `1px solid ${t.border}`,
