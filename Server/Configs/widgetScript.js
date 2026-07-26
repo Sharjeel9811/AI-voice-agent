@@ -94,7 +94,7 @@ const WIDGET_SCRIPT = `
     if (isMobile) {
       chat.style.cssText = 'position:fixed;bottom:0;right:0;width:100vw;height:100vh;border-radius:0;overflow:hidden;box-shadow:none;z-index:2147483647;display:' + (chatOpen ? 'block' : 'none') + ';border:none;background:#0B0B14;';
     } else {
-      var maxH = vh - SIDE - FAB_SIZE - GAP - 24;
+      var maxH = vh - SIDE - FAB_SIZE - GAP - 80;
       var h = Math.min(CHAT_H, Math.max(300, maxH));
       chat.style.cssText = 'position:fixed;bottom:' + (SIDE + FAB_SIZE + GAP) + 'px;right:' + SIDE + 'px;width:' + CHAT_W + 'px;height:' + h + 'px;border-radius:14px;overflow:hidden;box-shadow:0 8px 48px rgba(0,0,0,0.5);z-index:2147483647;display:' + (chatOpen ? 'block' : 'none') + ';border:1px solid rgba(255,255,255,0.08);background:#0B0B14;';
     }

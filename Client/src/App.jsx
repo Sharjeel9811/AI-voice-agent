@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Route, Routes } from 'react-router-dom'
+import { Route, Routes, useLocation } from 'react-router-dom'
 import Home from './pages/Home'
 import Login from './pages/Login'
 import Loading from './Components/Loading'
@@ -9,7 +9,6 @@ import Billing from './pages/Billing'
 import PaymentSuccess from './pages/PaymentSuccess'
 import PaymentCancel from './pages/PaymentCancel'
 import Widget from './pages/Widget'
-import SiteWidget from './Components/SiteWidget'
 
 const App = () => {
 
@@ -17,6 +16,7 @@ const App = () => {
 
   const [loading, setLoading] = useState(true);
 
+  const location = useLocation()
 
   useEffect(()=>{
     const fetchCurrentUser=async()=>{
@@ -32,6 +32,30 @@ const App = () => {
     fetchCurrentUser();
   },[])
 
+  useEffect(() => {
+    if (!user?._id) return
+    if (location.pathname === '/widget') return
+
+    var existing = document.getElementById('va-embed-script')
+    if (existing) return
+
+    var s = document.createElement('script')
+    s.id = 'va-embed-script'
+    s.src = '/widget.js'
+    s.setAttribute('data-user-id', user._id)
+    s.async = true
+    document.body.appendChild(s)
+
+    return function() {
+      var el = document.getElementById('va-embed-script')
+      if (el) el.remove()
+      var fab = document.getElementById('va-fab-wrap')
+      if (fab) fab.remove()
+      var chat = document.getElementById('va-chat')
+      if (chat) chat.remove()
+    }
+  }, [user?._id, location.pathname])
+
   if (loading) return <Loading />
 
   return (
@@ -45,7 +69,6 @@ const App = () => {
         <Route path='/payment-cancel' element={<PaymentCancel />} />
         <Route path='/widget' element={<Widget />} />
       </Routes>
-      <SiteWidget user={user} />
     </div>
   )
 }
