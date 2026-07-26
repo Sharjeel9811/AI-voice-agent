@@ -16,7 +16,13 @@ const app = express();
 // Webhook needs raw body - register before json parser
 app.use('/api/billing/webhook', express.raw({ type: 'application/json' }));
 
-app.use(express.json());
+// Handle JSON body - works with Vercel serverless (body may already be parsed)
+app.use((req, res, next) => {
+  if (req.body && typeof req.body === 'object') {
+    return next();
+  }
+  express.json()(req, res, next);
+});
 app.use(cookieParser());
 
 const allowedOrigins = [
