@@ -13,29 +13,9 @@ dotenv.config();
 
 const app = express();
 
-// Parse JSON body manually (works on Vercel serverless)
-// Must be before the webhook raw body handler
-app.use((req, res, next) => {
-  if (req.body && typeof req.body === 'object' && Object.keys(req.body).length > 0 && !(req.body instanceof Buffer)) {
-    return next();
-  }
-  try {
-    if (typeof req.body === 'string' && req.body.length > 0) {
-      req.body = JSON.parse(req.body);
-      return next();
-    }
-  } catch (e) {}
-  let data = '';
-  req.on('data', chunk => { data += chunk; });
-  req.on('end', () => {
-    if (data) {
-      try { req.body = JSON.parse(data); } catch (e) { req.body = {}; }
-    }
-    next();
-  });
-  req.on('error', () => { next(); });
-});
-
+// Parse JSON and URL-encoded bodies
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 // Webhook needs raw body
 app.use('/api/billing/webhook', express.raw({ type: 'application/json' }));
 app.use(cookieParser());
