@@ -119,7 +119,7 @@ const Home = ({user,setuser}) => {
          whileInView={{ opacity: 1, x: 0 }}
          viewport={{ once: true }}
          transition={{ duration: 0.5, delay: 0.2 }}
-         className="w-full lg:w-[420px] shrink-0"
+          className="w-full lg:w-[420px] shrink-0 max-w-full"
        >
          <AgentPreview user={user} setuser={setuser} />
        </motion.div>

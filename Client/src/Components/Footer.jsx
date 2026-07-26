@@ -139,7 +139,7 @@ const Footer = () => {
           </div>
 
           {/* Links */}
-          <div className="flex-1 grid grid-cols-2 sm:grid-cols-3 gap-8">
+          <div className="flex-1 grid grid-cols-3 sm:grid-cols-3 gap-8">
             <div>
               <h4 className="text-[11px] font-semibold uppercase tracking-wider mb-4" style={{ color: "rgba(255,255,255,0.5)" }}>
                 Product

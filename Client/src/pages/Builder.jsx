@@ -404,7 +404,7 @@ const Builder = ({ user, setuser }) => {
                   </h2>
                   <div>
                     <label style={labelStyle}>Theme</label>
-                    <div className="flex gap-2">
+                    <div className="flex flex-wrap gap-2">
                       {themes.map((t) => (
                         <motion.button
                           key={t.value}

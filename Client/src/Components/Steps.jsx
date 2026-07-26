@@ -82,7 +82,7 @@ const Steps = () => {
               viewport={{ once: true }}
               transition={{ duration: 0.4, delay: i * 0.1 }}
               whileHover={{ y: -6, borderColor: `${step.color}30` }}
-              className="relative p-5 rounded-xl transition-all"
+              className="relative p-5 sm:p-6 rounded-xl transition-all"
               style={{
                 background: "rgba(255,255,255,0.02)",
                 border: "1px solid rgba(255,255,255,0.06)",
