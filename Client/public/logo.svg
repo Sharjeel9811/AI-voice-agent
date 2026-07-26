@@ -1,0 +1,70 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <defs>
+    <!-- Gradient for the outer ring -->
+    <linearGradient id="ringGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#6C63FF;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#00D4FF;stop-opacity:1" />
+    </linearGradient>
+
+    <!-- Gradient for the inner circle -->
+    <linearGradient id="coreGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1a1a2e;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#16213e;stop-opacity:1" />
+    </linearGradient>
+
+    <!-- Glow filter -->
+    <filter id="glow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="3.5" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+
+    <!-- Soft glow for waves -->
+    <filter id="waveGlow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Outer glow ring -->
+  <circle cx="100" cy="100" r="92" fill="none" stroke="url(#ringGradient)" stroke-width="3" opacity="0.4" filter="url(#glow)"/>
+
+  <!-- Main ring -->
+  <circle cx="100" cy="100" r="85" fill="none" stroke="url(#ringGradient)" stroke-width="4" filter="url(#glow)"/>
+
+  <!-- Dark inner circle -->
+  <circle cx="100" cy="100" r="80" fill="url(#coreGradient)"/>
+
+  <!-- Outer sound wave arcs (left) -->
+  <path d="M 62 70 Q 42 100 62 130" fill="none" stroke="#6C63FF" stroke-width="3.5" stroke-linecap="round" opacity="0.6" filter="url(#waveGlow)"/>
+  <path d="M 52 58 Q 24 100 52 142" fill="none" stroke="#6C63FF" stroke-width="2.5" stroke-linecap="round" opacity="0.35" filter="url(#waveGlow)"/>
+
+  <!-- Outer sound wave arcs (right) -->
+  <path d="M 138 70 Q 158 100 138 130" fill="none" stroke="#00D4FF" stroke-width="3.5" stroke-linecap="round" opacity="0.6" filter="url(#waveGlow)"/>
+  <path d="M 148 58 Q 176 100 148 142" fill="none" stroke="#00D4FF" stroke-width="2.5" stroke-linecap="round" opacity="0.35" filter="url(#waveGlow)"/>
+
+  <!-- Microphone body -->
+  <rect x="88" y="58" width="24" height="42" rx="12" ry="12" fill="url(#ringGradient)" filter="url(#glow)"/>
+
+  <!-- Microphone stand base arc -->
+  <path d="M 72 100 Q 72 124 100 124 Q 128 124 128 100" fill="none" stroke="url(#ringGradient)" stroke-width="3.5" stroke-linecap="round" filter="url(#glow)"/>
+
+  <!-- Microphone stand vertical line -->
+  <line x1="100" y1="124" x2="100" y2="140" stroke="url(#ringGradient)" stroke-width="3.5" stroke-linecap="round" filter="url(#glow)"/>
+
+  <!-- Microphone base horizontal line -->
+  <line x1="85" y1="140" x2="115" y2="140" stroke="url(#ringGradient)" stroke-width="3.5" stroke-linecap="round" filter="url(#glow)"/>
+
+  <!-- AI dot pattern inside mic (circuit/AI feel) -->
+  <circle cx="100" cy="73" r="2.5" fill="white" opacity="0.8"/>
+  <circle cx="100" cy="83" r="2.5" fill="white" opacity="0.8"/>
+  <circle cx="100" cy="93" r="2.5" fill="white" opacity="0.8"/>
+
+  <!-- Small AI sparkle top-right -->
+  <polygon points="155,42 158,50 166,50 160,55 162,63 155,58 148,63 150,55 144,50 152,50" fill="#00D4FF" opacity="0.85" filter="url(#glow)" transform="scale(0.7) translate(75, 15)"/>
+</svg>
