@@ -1,6 +1,11 @@
 {
   "buildCommand": "cd Client && npm ci && npm run build",
   "outputDirectory": "Client/dist",
+  "functions": {
+    "api/index.js": {
+      "bodyParser": false
+    }
+  },
   "rewrites": [
     { "source": "/api/(.*)", "destination": "/api" },
     { "source": "/widget.js", "destination": "/api" },
