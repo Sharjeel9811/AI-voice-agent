@@ -18,20 +18,24 @@ app.use('/api/billing/webhook', express.raw({ type: 'application/json' }));
 
 // Parse JSON body manually (works on Vercel serverless)
 app.use((req, res, next) => {
-  if (req.body && typeof req.body === 'object') {
+  if (req.body && typeof req.body === 'object' && Object.keys(req.body).length > 0) {
     return next();
   }
+  try {
+    if (typeof req.body === 'string') {
+      req.body = JSON.parse(req.body);
+      return next();
+    }
+  } catch (e) {}
   let data = '';
   req.on('data', chunk => { data += chunk; });
   req.on('end', () => {
     if (data) {
       try { req.body = JSON.parse(data); } catch (e) { req.body = {}; }
-    } else {
-      req.body = {};
     }
     next();
   });
-  req.on('error', () => { req.body = {}; next(); });
+  req.on('error', () => { next(); });
 });
 app.use(cookieParser());
 
