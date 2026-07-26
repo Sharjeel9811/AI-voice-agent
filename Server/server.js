@@ -16,12 +16,22 @@ const app = express();
 // Webhook needs raw body - register before json parser
 app.use('/api/billing/webhook', express.raw({ type: 'application/json' }));
 
-// Handle JSON body - works with Vercel serverless (body may already be parsed)
+// Parse JSON body manually (works on Vercel serverless)
 app.use((req, res, next) => {
   if (req.body && typeof req.body === 'object') {
     return next();
   }
-  express.json()(req, res, next);
+  let data = '';
+  req.on('data', chunk => { data += chunk; });
+  req.on('end', () => {
+    if (data) {
+      try { req.body = JSON.parse(data); } catch (e) { req.body = {}; }
+    } else {
+      req.body = {};
+    }
+    next();
+  });
+  req.on('error', () => { req.body = {}; next(); });
 });
 app.use(cookieParser());
 
