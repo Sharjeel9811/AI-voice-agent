@@ -1,3 +1,4 @@
+import mongoose from 'mongoose';
 import express from 'express';
 import dotenv from 'dotenv';
 import { ConnectDB } from './Configs/db.js';
@@ -39,6 +40,16 @@ app.use((req, res, next) => {
 });
 
 ConnectDB();
+
+// Wait for DB connection before handling requests
+app.use(async (req, res, next) => {
+  try {
+    await ConnectDB();
+    next();
+  } catch (err) {
+    return res.status(503).json({ message: 'Database not available' });
+  }
+});
 
 app.get('/', (req, res) => {
   res.send('Hello from server');

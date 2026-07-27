@@ -3,11 +3,12 @@ import UserModel from "../Models/UserModels.js";
 
 export const GoogleAuth = async (req, res) => {
   try {
+    console.log("GoogleAuth headers:", JSON.stringify(req.headers));
     console.log("GoogleAuth body:", JSON.stringify(req.body));
     const { name, email } = req.body;
 
     if (!name || !email) {
-      console.log("GoogleAuth missing fields:", { name, email });
+      console.log("GoogleAuth missing fields:", { name, email, body: req.body });
       return res.status(400).json({ message: "All fields are required" });
     }
 
@@ -31,7 +32,7 @@ export const GoogleAuth = async (req, res) => {
 
   } catch (error) {
     console.error("GoogleAuth error:", error.message, error.stack);
-    return res.status(500).json({ message: "Internal server error" });
+    return res.status(500).json({ message: "Internal server error", detail: error.message });
   }
 };
 
