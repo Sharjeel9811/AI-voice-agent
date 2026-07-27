@@ -160,6 +160,10 @@ const Widget = () => {
   }
 
   // ---------- Sending messages ----------
+  var stripImgTags = function(text) {
+    return text.replace(/\[IMG\].*?\[\/IMG\]/g, '').trim()
+  }
+
   var sendMessage = async function(text) {
     var message = text || input.trim()
     if (!message || appState === 'processing') return
@@ -182,7 +186,7 @@ const Widget = () => {
       var reply = res.data.reply || "I couldn't generate a response."
       setMessages(function(p) { return [...p, { role: 'assistant', content: reply }] })
       if (mode === 'voice') {
-        speak(reply)
+        speak(stripImgTags(reply))
       } else {
         setAppState('idle')
       }
