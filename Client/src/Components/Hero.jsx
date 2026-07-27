@@ -247,6 +247,46 @@ const Hero = ({ user }) => {
             </motion.div>
           ))}
         </motion.div>
+
+        {/* Customizable Themes */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.6 }}
+          className="mt-20 text-center"
+        >
+          <p className="text-[11px] font-semibold uppercase tracking-[0.2em] mb-3" style={{ color: theme.accent.primary }}>
+            Customizable Themes
+          </p>
+          <h2 className="text-2xl sm:text-3xl font-bold mb-3" style={{ color: theme.text.primary }}>
+            Your Brand, Your Style
+          </h2>
+          <p className="text-sm max-w-lg mx-auto mb-8 leading-relaxed" style={{ color: theme.text.secondary }}>
+            Pick a theme that matches your brand identity. Every detail is designed to give your customers a seamless experience.
+          </p>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 max-w-lg mx-auto">
+            {[
+              { name: "Dark", color: "#0B0B14", accent: "#7C5CFC" },
+              { name: "Light", color: "#F8F9FC", accent: "#6C5CE7" },
+              { name: "Glass", color: "linear-gradient(135deg, #0F0C29, #302B63)", accent: "#00D4FF" },
+              { name: "Neon", color: "#0A0A0F", accent: "#FF2D95" },
+            ].map((th, i) => (
+              <motion.div
+                key={i}
+                whileHover={{ y: -4, scale: 1.02 }}
+                className="rounded-xl p-4 flex flex-col items-center gap-2"
+                style={{
+                  background: th.color.startsWith("linear") ? th.color : th.color,
+                  border: `1px solid ${th.name === "Light" ? "rgba(0,0,0,0.08)" : "rgba(255,255,255,0.08)"}`,
+                  minHeight: 100,
+                }}
+              >
+                <div className="w-8 h-8 rounded-full" style={{ background: th.accent, boxShadow: `0 0 12px ${th.accent}40` }} />
+                <span className="text-xs font-medium" style={{ color: th.name === "Light" ? "#1A1A2E" : "#fff" }}>{th.name}</span>
+              </motion.div>
+            ))}
+          </div>
+        </motion.div>
       </div>
     </div>
   );

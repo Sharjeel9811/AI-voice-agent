@@ -132,22 +132,20 @@ const AgentPreview = ({ user, setuser }) => {
       </div>
 
       {/* Agent Preview Card */}
-      <AnimatePresence mode="wait">
-        <motion.div
-          key={activeTheme}
-          initial={{ opacity: 0, scale: 0.98 }}
-          animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0, scale: 0.98 }}
-          transition={{ duration: 0.3 }}
-          className="w-full lg:max-w-[420px] rounded-2xl overflow-hidden"
-          style={{
-            background: isGradient ? t.bg : t.bg,
-            border: `1px solid ${t.border}`,
-            boxShadow: t.glow
-              ? `0 0 40px ${t.accent}20, 0 8px 32px rgba(0,0,0,0.4)`
-              : "0 8px 32px rgba(0,0,0,0.3)",
-          }}
-        >
+      <motion.div
+        key={activeTheme}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.1 }}
+        className="w-full lg:max-w-[420px] rounded-2xl overflow-hidden"
+        style={{
+          background: isGradient ? t.bg : t.bg,
+          border: `1px solid ${t.border}`,
+          boxShadow: t.glow
+            ? `0 0 40px ${t.accent}20, 0 8px 32px rgba(0,0,0,0.4)`
+            : "0 8px 32px rgba(0,0,0,0.3)",
+        }}
+      >
           {/* Header */}
           <div
             className="flex items-center gap-3 px-5 py-4"
@@ -318,7 +316,6 @@ const AgentPreview = ({ user, setuser }) => {
             </span>
           </div>
         </motion.div>
-      </AnimatePresence>
     </div>
   );
 };
