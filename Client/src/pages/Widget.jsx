@@ -157,7 +157,7 @@ const Widget = () => {
 
   // ---------- Sending messages ----------
   var stripImgTags = function(text) {
-    return text.replace(/\[IMG\].*?\[\/IMG\]/g, '').trim()
+    return text.replace(/\[IMG\].*?\[\/IMG\]/gi, '').replace(/https?:\/\/\S+/g, '').replace(/\s+/g, ' ').trim()
   }
 
   var sendMessage = async function(text) {
