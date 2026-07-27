@@ -226,7 +226,7 @@ const ApiKeys = ({ user, setuser }) => {
             {/* cURL */}
             <div style={sectionCard}>
               <p className="text-[11px] font-semibold mb-2" style={{ color: theme.text.secondary }}>cURL</p>
-              <pre className="text-[11px] font-mono leading-relaxed p-4 rounded-lg overflow-x-auto" style={{ background: 'rgba(0,0,0,0.25)', color: theme.accent.secondary }}>
+              <pre className="text-[11px] font-mono leading-relaxed p-4 rounded-lg overflow-x-auto" style={{ background: 'rgba(0,0,0,0.25)', color: 'rgba(255,255,255,0.8)' }}>
                 {'curl -X POST https://ai-voice-agent-gules-nu.vercel.app/api/agent/chat \\\n  -H "Authorization: Bearer ' + (apiKey || 'YOUR_API_KEY') + '" \\\n  -H "Content-Type: application/json" \\\n  -d \'' + exampleJson + '\''}
               </pre>
             </div>
@@ -234,7 +234,7 @@ const ApiKeys = ({ user, setuser }) => {
             {/* Node.js */}
             <div style={sectionCard}>
               <p className="text-[11px] font-semibold mb-2" style={{ color: theme.text.secondary }}>Node.js</p>
-              <pre className="text-[11px] font-mono leading-relaxed p-4 rounded-lg overflow-x-auto" style={{ background: 'rgba(0,0,0,0.25)', color: theme.accent.secondary }}>
+              <pre className="text-[11px] font-mono leading-relaxed p-4 rounded-lg overflow-x-auto" style={{ background: 'rgba(0,0,0,0.25)', color: 'rgba(255,255,255,0.8)' }}>
                 {`const axios = require('axios');
 
 const res = await axios.post(
@@ -255,7 +255,7 @@ console.log(res.data.reply);`}
             {/* Python */}
             <div style={sectionCard}>
               <p className="text-[11px] font-semibold mb-2" style={{ color: theme.text.secondary }}>Python</p>
-              <pre className="text-[11px] font-mono leading-relaxed p-4 rounded-lg overflow-x-auto" style={{ background: 'rgba(0,0,0,0.25)', color: theme.accent.secondary }}>
+              <pre className="text-[11px] font-mono leading-relaxed p-4 rounded-lg overflow-x-auto" style={{ background: 'rgba(0,0,0,0.25)', color: 'rgba(255,255,255,0.8)' }}>
                 {`import requests
 import json
 
