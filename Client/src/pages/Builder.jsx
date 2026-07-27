@@ -18,6 +18,12 @@ const tones = [
   { value: 'support', label: 'Support', desc: 'Helpful & patient' },
 ]
 
+const planThemes = {
+  free: ['dark', 'light'],
+  premium: ['dark', 'light', 'glass', 'neon'],
+  enterprise: ['dark', 'light', 'glass', 'neon'],
+}
+
 const themes = [
   { value: 'dark', label: 'Dark' },
   { value: 'light', label: 'Light' },
@@ -46,15 +52,19 @@ const Builder = ({ user, setuser }) => {
   const [activeSection, setActiveSection] = useState('basic')
   const [showEmbed, setShowEmbed] = useState(false)
   const [hasSaved, setHasSaved] = useState(false)
+  const [agentId, setAgentId] = useState(null)
 
   useEffect(() => {
     if (!user) { navigate('/login'); return }
     const fetchConfig = async () => {
       try {
-        await axios.get(
+        const { data } = await axios.get(
           `${import.meta.env.VITE_BACKEND_URL}/api/agent/config`,
           { withCredentials: true }
         )
+        if (data.agent) {
+          setAgentId(data.agent._id)
+        }
       } catch (err) {
         console.error('Failed to load config', err)
       }
@@ -69,11 +79,12 @@ const Builder = ({ user, setuser }) => {
   const handleSave = async () => {
     setSaving(true)
     try {
-      await axios.post(
+      const { data } = await axios.post(
         `${import.meta.env.VITE_BACKEND_URL}/api/agent/save`,
-        form,
+        { ...form, agentId },
         { withCredentials: true }
       )
+      setAgentId(data.agent._id)
       setForm({ ...defaultForm })
       setHasSaved(true)
       toast.success('Agent saved successfully!', {
@@ -81,7 +92,8 @@ const Builder = ({ user, setuser }) => {
         iconTheme: { primary: '#7C5CFC', secondary: '#fff' },
       })
     } catch (err) {
-      toast.error('Failed to save agent', {
+      const msg = err.response?.data?.message || 'Failed to save agent'
+      toast.error(msg, {
         style: { background: '#1a1a2e', color: '#fff', border: '1px solid rgba(239,68,68,0.3)' },
         iconTheme: { primary: '#ef4444', secondary: '#fff' },
       })
@@ -405,24 +417,36 @@ const Builder = ({ user, setuser }) => {
                   <div>
                     <label style={labelStyle}>Theme</label>
                     <div className="flex flex-wrap gap-2">
-                      {themes.map((t) => (
-                        <motion.button
-                          key={t.value}
-                          whileHover={{ scale: 1.05 }}
-                          whileTap={{ scale: 0.95 }}
-                          onClick={() => handleChange('theme', t.value)}
-                          className="px-4 py-2 rounded-lg text-xs font-medium"
-                          style={{
-                            background: form.theme === t.value ? 'rgba(124,92,252,0.15)' : 'rgba(255,255,255,0.04)',
-                            border: form.theme === t.value
-                              ? `1px solid rgba(124,92,252,0.3)`
-                              : `1px solid ${theme.border.light}`,
-                            color: form.theme === t.value ? theme.accent.primary : theme.text.secondary,
-                          }}
-                        >
-                          {t.label}
-                        </motion.button>
-                      ))}
+                      {themes.map((t) => {
+                        const locked = user && !planThemes[user.plan]?.includes(t.value)
+                        return (
+                          <motion.button
+                            key={t.value}
+                            whileHover={locked ? {} : { scale: 1.05 }}
+                            whileTap={locked ? {} : { scale: 0.95 }}
+                            onClick={() => {
+                              if (locked) {
+                                toast.error(`"${t.label}" theme requires ${user.plan === 'free' ? 'Premium or higher' : 'Enterprise'}`)
+                                return
+                              }
+                              handleChange('theme', t.value)
+                            }}
+                            className="px-4 py-2 rounded-lg text-xs font-medium"
+                            style={{
+                              background: form.theme === t.value ? 'rgba(124,92,252,0.15)' : 'rgba(255,255,255,0.04)',
+                              border: form.theme === t.value
+                                ? `1px solid rgba(124,92,252,0.3)`
+                                : locked ? `1px solid rgba(255,255,255,0.04)` : `1px solid ${theme.border.light}`,
+                              color: locked ? theme.text.muted : (form.theme === t.value ? theme.accent.primary : theme.text.secondary),
+                              cursor: locked ? 'not-allowed' : 'pointer',
+                              opacity: locked ? 0.4 : 1,
+                            }}
+                          >
+                            {t.label}
+                            {locked && ' 🔒'}
+                          </motion.button>
+                        )
+                      })}
                     </div>
                   </div>
                   <div>

@@ -3,6 +3,8 @@ import UserModel from '../Models/UserModels.js';
 
 const OPENROUTER_API_URL = 'https://openrouter.ai/api/v1/chat/completions';
 
+const MINUTE_LIMITS = { free: 100, premium: 2000, enterprise: Infinity };
+
 export const ChatWithAgent = async (req, res) => {
   try {
     const { userId, message, history } = req.body;
@@ -11,7 +13,49 @@ export const ChatWithAgent = async (req, res) => {
       return res.status(400).json({ message: 'userId and message are required' });
     }
 
-    const agent = await AgentModel.findOne({ userId, isActive: true });
+    // API key authentication (Enterprise)
+    const authHeader = req.headers.authorization;
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+      const apiKey = authHeader.slice(7);
+      const keyUser = await UserModel.findOne({ apiKey });
+      if (!keyUser) {
+        return res.status(401).json({ message: 'Invalid API key' });
+      }
+      if (keyUser.plan !== 'enterprise') {
+        return res.status(403).json({ message: 'API key access requires an Enterprise plan' });
+      }
+      // Allow the request — use the owner's userId regardless of body
+      req.body.userId = keyUser._id.toString();
+    }
+
+    const effectiveUserId = req.body.userId;
+
+    const user = await UserModel.findById(effectiveUserId);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Reset monthly usage if month changed
+    const now = new Date();
+    const lastReset = user.lastMonthReset || new Date(0);
+    if (now.getMonth() !== lastReset.getMonth() || now.getFullYear() !== lastReset.getFullYear()) {
+      user.minutesUsed = 0;
+      user.lastMonthReset = now;
+    }
+
+    // Enforce minute limit
+    const limit = MINUTE_LIMITS[user.plan] || 100;
+    if (limit !== Infinity && (user.minutesUsed || 0) >= limit) {
+      return res.status(403).json({
+        message: 'Monthly minute limit reached. Please upgrade your plan to continue.',
+        limitReached: true,
+        plan: user.plan,
+        minutesUsed: user.minutesUsed,
+        limit,
+      });
+    }
+
+    const agent = await AgentModel.findOne({ userId: effectiveUserId, isActive: true });
     if (!agent) {
       return res.status(404).json({ message: 'Agent not found' });
     }
@@ -57,18 +101,9 @@ ${basePrompt}`;
 
     // Track usage (estimate: 1 minute per ~500 chars of input+output)
     try {
-      const user = await UserModel.findById(userId);
-      if (user) {
-        const now = new Date();
-        const lastReset = user.lastMonthReset || new Date(0);
-        if (now.getMonth() !== lastReset.getMonth() || now.getFullYear() !== lastReset.getFullYear()) {
-          user.minutesUsed = 0;
-          user.lastMonthReset = now;
-        }
-        const chars = (message.length + reply.length);
-        user.minutesUsed = (user.minutesUsed || 0) + Math.max(0.05, chars / 500);
-        await user.save();
-      }
+      const chars = (message.length + reply.length);
+      user.minutesUsed = (user.minutesUsed || 0) + Math.max(0.05, chars / 500);
+      await user.save();
     } catch (e) { /* usage tracking best-effort */ }
 
     return res.status(200).json({ reply });

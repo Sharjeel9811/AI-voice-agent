@@ -187,7 +187,11 @@ const Widget = () => {
         setAppState('idle')
       }
     } catch (err) {
-      setMessages(function(p) { return [...p, { role: 'assistant', content: "Sorry, I'm having trouble connecting. Please try again." }] })
+      var errorMsg = "Sorry, I'm having trouble connecting. Please try again."
+      if (err.response && err.response.data && err.response.data.limitReached) {
+        errorMsg = err.response.data.message || "Monthly limit reached. Please upgrade your plan."
+      }
+      setMessages(function(p) { return [...p, { role: 'assistant', content: errorMsg }] })
       setAppState('idle')
     }
   }

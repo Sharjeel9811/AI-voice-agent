@@ -96,6 +96,15 @@ export const GetUsage = async (req, res) => {
     const user = await UserModel.findById(req.userId);
     if (!user) return res.status(404).json({ message: "User not found" });
 
+    // Reset monthly usage if month changed
+    const now = new Date();
+    const lastReset = user.lastMonthReset || new Date(0);
+    if (now.getMonth() !== lastReset.getMonth() || now.getFullYear() !== lastReset.getFullYear()) {
+      user.minutesUsed = 0;
+      user.lastMonthReset = now;
+      await user.save();
+    }
+
     const minutesUsed = user.minutesUsed || 0;
     const limit = LIMITS[user.plan] || 100;
     const percentage = limit === Infinity ? 0 : Math.min(100, (minutesUsed / limit) * 100);

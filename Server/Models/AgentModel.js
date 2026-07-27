@@ -5,7 +5,6 @@ const AgentSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'users',
     required: true,
-    unique: true,
   },
   agentName: {
     type: String,
