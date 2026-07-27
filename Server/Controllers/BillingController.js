@@ -112,6 +112,39 @@ export const VerifySession = async (req, res) => {
   }
 };
 
+export const CancelSubscription = async (req, res) => {
+  try {
+    const user = await UserModel.findById(req.userId);
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    if (user.plan === 'free') {
+      return res.status(400).json({ message: "You are already on the Free plan" });
+    }
+
+    // Find and cancel Stripe subscription
+    const customers = await stripe.customers.list({ email: user.email });
+    if (customers.data.length > 0) {
+      const subscriptions = await stripe.subscriptions.list({
+        customer: customers.data[0].id,
+        status: 'active',
+      });
+      for (const sub of subscriptions.data) {
+        await stripe.subscriptions.update(sub.id, {
+          cancel_at_period_end: true,
+        });
+      }
+    }
+
+    user.plan = 'free';
+    await user.save();
+
+    return res.status(200).json({ message: "Subscription cancelled. Downgraded to Free plan.", user });
+  } catch (error) {
+    console.error("Cancel subscription error:", error);
+    return res.status(500).json({ message: "Failed to cancel subscription" });
+  }
+};
+
 export const GetSubscription = async (req, res) => {
   try {
     const user = await UserModel.findById(req.userId);

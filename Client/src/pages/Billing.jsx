@@ -12,6 +12,7 @@ import {
 import Navbar from "../Components/Navbar";
 import theme from "../Configs/theme";
 import axios from "axios";
+import toast, { Toaster } from "react-hot-toast";
 
 const plans = [
   {
@@ -30,7 +31,7 @@ const plans = [
       { text: "Priority support", included: false },
       { text: "API access", included: false },
     ],
-    cta: "Current Plan",
+    cta: "Get Started",
     icon: <MdMic size={20} />,
     popular: false,
   },
@@ -94,7 +95,26 @@ const Billing = ({ user, setuser }) => {
       navigate('/login');
       return;
     }
-    if (plan.name.toLowerCase() === 'free' || user?.plan === plan.planKey) return;
+    if (user?.plan === plan.planKey) return;
+
+    // Downgrade to Free
+    if (plan.name.toLowerCase() === 'free') {
+      setLoading('Free');
+      try {
+        const { data } = await axios.post(
+          `${import.meta.env.VITE_BACKEND_URL}/api/billing/cancel`,
+          {},
+          { withCredentials: true }
+        );
+        setuser(data.user);
+        toast.success('Downgraded to Free plan');
+      } catch (err) {
+        toast.error(err.response?.data?.message || 'Failed to downgrade');
+      } finally {
+        setLoading(null);
+      }
+      return;
+    }
 
     setError(null);
     setLoading(plan.name);
@@ -119,6 +139,7 @@ const Billing = ({ user, setuser }) => {
   return (
     <div style={{ background: theme.bg.primary, minHeight: "100vh" }}>
       <Navbar user={user} setuser={setuser} />
+      <Toaster position="top-right" toastOptions={{ duration: 3000 }} />
 
       <div className="max-w-6xl mx-auto px-6 py-16 pt-24">
         {/* Error Toast */}
@@ -391,6 +412,11 @@ const Billing = ({ user, setuser }) => {
                         ease: "linear",
                       }}
                     />
+                  ) : plan.name === 'Free' && user?.plan !== 'free' ? (
+                    <span className="flex items-center justify-center gap-1.5">
+                      Downgrade to Free
+                      <MdOutlineArrowForward size={12} />
+                    </span>
                   ) : isCurrent ? (
                     "Current Plan"
                   ) : (
