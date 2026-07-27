@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
+import { useNavigate } from 'react-router-dom'
 import toast, { Toaster } from 'react-hot-toast'
 import {
   MdSave, MdContentCopy, MdMic, MdVolumeUp,
@@ -39,6 +40,7 @@ const defaultForm = {
 }
 
 const Builder = ({ user, setuser }) => {
+  const navigate = useNavigate()
   const [form, setForm] = useState({ ...defaultForm })
   const [saving, setSaving] = useState(false)
   const [activeSection, setActiveSection] = useState('basic')
@@ -46,6 +48,7 @@ const Builder = ({ user, setuser }) => {
   const [hasSaved, setHasSaved] = useState(false)
 
   useEffect(() => {
+    if (!user) { navigate('/login'); return }
     const fetchConfig = async () => {
       try {
         await axios.get(
@@ -57,7 +60,7 @@ const Builder = ({ user, setuser }) => {
       }
     }
     fetchConfig()
-  }, [])
+  }, [user, navigate])
 
   const handleChange = (field, value) => {
     setForm((prev) => ({ ...prev, [field]: value }))

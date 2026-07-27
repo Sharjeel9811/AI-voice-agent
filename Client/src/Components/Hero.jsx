@@ -109,7 +109,7 @@ const Hero = ({ user }) => {
           <motion.button
             whileHover={{ scale: 1.04, boxShadow: `0 0 30px ${theme.button.primary.glow}` }}
             whileTap={{ scale: 0.97 }}
-            onClick={() => navigate("/builder")}
+            onClick={() => navigate(user ? "/builder" : "/login")}
             className="px-7 py-3 rounded-xl text-sm font-semibold transition-all"
             style={{
               background: theme.button.primary.background,
