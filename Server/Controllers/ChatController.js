@@ -135,6 +135,7 @@ function buildSystemPrompt(agent) {
   prompt += '\n\nKeep your responses concise and conversational since this is a voice interaction.';
   prompt += '\nAvoid using markdown, bullet points, or long paragraphs. Speak naturally.';
   prompt += '\nIf you need to list things, say them one at a time in a natural speaking style.';
+  prompt += '\n\nIMPORTANT: Always respond in the SAME LANGUAGE the user writes to you. If they write in Urdu, respond in Urdu. If they write in Arabic, respond in Arabic. If they write in English, respond in English. Match their language exactly.';
 
   return prompt;
 }

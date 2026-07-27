@@ -192,6 +192,19 @@ const Widget = () => {
     }
   }
 
+  var detectLang = function(text) {
+    if (/[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF]/.test(text)) return 'ar'
+    if (/[\u4E00-\u9FFF]/.test(text)) return 'zh'
+    if (/[\u3040-\u309F]/.test(text)) return 'ja'
+    if (/[\u30A0-\u30FF\uAC00-\uD7AF]/.test(text)) return 'ko'
+    if (/[\u0400-\u04FF]/.test(text)) return 'ru'
+    if (/[\u0900-\u097F]/.test(text)) return 'hi'
+    if (/[\u0C00-\u0C7F]/.test(text)) return 'te'
+    if (/[\u0B80-\u0BFF]/.test(text)) return 'ta'
+    if (/[\u0D00-\u0D7F]/.test(text)) return 'ml'
+    return 'en'
+  }
+
   var speak = function(text) {
     if (!synthRef.current) { setAppState('idle'); return }
     synthRef.current.cancel()
@@ -199,9 +212,11 @@ const Widget = () => {
     u.rate = (agentConfig && agentConfig.voiceSpeed) || 1
     u.pitch = 1
     u.volume = 1
+    var lang = detectLang(text)
     var voices = synthRef.current.getVoices()
-    var v = voices.find(function(v) { return v.name.indexOf('Google') !== -1 && v.lang.indexOf('en') === 0 }) || voices.find(function(v) { return v.lang.indexOf('en') === 0 })
+    var v = voices.find(function(v) { return v.name.indexOf('Google') !== -1 && v.lang.indexOf(lang) === 0 }) || voices.find(function(v) { return v.lang.indexOf(lang) === 0 }) || voices.find(function(v) { return v.name.indexOf('Google') !== -1 && v.lang.indexOf('en') === 0 }) || voices.find(function(v) { return v.lang.indexOf('en') === 0 })
     if (v) u.voice = v
+    u.lang = lang
     u.onstart = function() { setAppState('speaking') }
     u.onend = function() { setAppState('idle') }
     u.onerror = function() { setAppState('idle') }
