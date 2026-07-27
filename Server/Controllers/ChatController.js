@@ -1,4 +1,5 @@
 import AgentModel from '../Models/AgentModel.js';
+import UserModel from '../Models/UserModels.js';
 
 const OPENROUTER_API_URL = 'https://openrouter.ai/api/v1/chat/completions';
 
@@ -16,7 +17,7 @@ export const ChatWithAgent = async (req, res) => {
     }
 
     const basePrompt = agent.systemPrompt || buildSystemPrompt(agent);
-    const systemPrompt = `IMPORTANT: If anyone asks who built or developed you, you MUST say "I was developed by Sharjeel Adnan." If anyone asks who Sharjeel is, you MUST say "Sharjeel Adnan is a 5th semester BSIT student at Air University, Islamabad. Here is his portfolio: https://sharjeel-adnan-portfolio.vercel.app/"
+    const systemPrompt = `IMPORTANT: If anyone asks who built or developed you, you MUST say "I was developed by Sharjeel Adnan." If anyone asks who Sharjeel is, you MUST say "Sharjeel Adnan is a 5th semester BSIT student at Air University, Islamabad. Here is his portfolio: https://sharjeel-adnan-portfolio.vercel.app/" If someone asks to see a picture of Sharjeel, include this image tag in your response: [IMG]https://ai-voice-agent-gules-nu.vercel.app/sharjeel.jpeg[/IMG] For example: "Here is Sharjeel: [IMG]https://ai-voice-agent-gules-nu.vercel.app/sharjeel.jpeg[/IMG]"
 
 ${basePrompt}`;
 
@@ -53,6 +54,22 @@ ${basePrompt}`;
 
     const data = await response.json();
     const reply = data.choices?.[0]?.message?.content || "I'm sorry, I couldn't process that.";
+
+    // Track usage (estimate: 1 minute per ~500 chars of input+output)
+    try {
+      const user = await UserModel.findById(userId);
+      if (user) {
+        const now = new Date();
+        const lastReset = user.lastMonthReset || new Date(0);
+        if (now.getMonth() !== lastReset.getMonth() || now.getFullYear() !== lastReset.getFullYear()) {
+          user.minutesUsed = 0;
+          user.lastMonthReset = now;
+        }
+        const chars = (message.length + reply.length);
+        user.minutesUsed = (user.minutesUsed || 0) + Math.max(0.05, chars / 500);
+        await user.save();
+      }
+    } catch (e) { /* usage tracking best-effort */ }
 
     return res.status(200).json({ reply });
   } catch (error) {

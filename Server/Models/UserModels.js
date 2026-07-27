@@ -52,7 +52,18 @@ plan:{
 
 }
 ,
-
+minutesUsed:{
+    type:Number,
+    default:0
+},
+lastMonthReset:{
+    type:Date,
+    default:Date.now
+},
+apiKey:{
+    type:String,
+    default:function(){ return 'va_' + Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15); }
+},
 
 },{timestamps:true});
 

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { useNavigate } from "react-router-dom";
 import {
@@ -80,6 +80,14 @@ const Billing = ({ user, setuser }) => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(null);
   const [error, setError] = useState(null);
+  const [usage, setUsage] = useState(null);
+
+  useEffect(() => {
+    if (!user) return;
+    axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/user/usage`, { withCredentials: true })
+      .then(({ data }) => setUsage(data))
+      .catch(() => {});
+  }, [user]);
 
   const handleCheckout = async (plan) => {
     if (!user) {
@@ -176,6 +184,64 @@ const Billing = ({ user, setuser }) => {
           </motion.div>
         </div>
 
+        {/* Usage Meter */}
+        {usage && user?.plan !== 'enterprise' && (
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="max-w-5xl mx-auto mb-10 p-5 rounded-xl"
+            style={{
+              background: 'rgba(255,255,255,0.02)',
+              border: `1px solid ${theme.border.light}`,
+            }}
+          >
+            <div className="flex items-center justify-between mb-3">
+              <div>
+                <p className="text-sm font-semibold" style={{ color: theme.text.primary }}>
+                  Monthly Usage
+                </p>
+                <p className="text-[11px] mt-0.5" style={{ color: theme.text.secondary }}>
+                  {Math.round(usage.minutesUsed)} / {usage.limit === Infinity ? '∞' : usage.limit} minutes used
+                </p>
+              </div>
+              {usage.percentage >= 80 && (
+                <motion.button
+                  whileHover={{ scale: 1.02, boxShadow: `0 0 20px ${theme.button.primary.glow}` }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={() => document.getElementById('pro-plan')?.scrollIntoView({ behavior: 'smooth' })}
+                  className="px-4 py-2 rounded-lg text-[11px] font-semibold"
+                  style={{
+                    background: 'linear-gradient(135deg, #EF4444, #DC2626)',
+                    color: '#fff',
+                  }}
+                >
+                  Upgrade to Pro
+                </motion.button>
+              )}
+            </div>
+            <div className="w-full h-2 rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,0.06)' }}>
+              <motion.div
+                initial={{ width: 0 }}
+                animate={{ width: Math.min(usage.percentage, 100) + '%' }}
+                transition={{ duration: 0.8, ease: 'easeOut' }}
+                className="h-full rounded-full"
+                style={{
+                  background: usage.percentage >= 80
+                    ? 'linear-gradient(90deg, #F59E0B, #EF4444)'
+                    : usage.percentage >= 50
+                    ? 'linear-gradient(90deg, #7C5CFC, #F59E0B)'
+                    : 'linear-gradient(90deg, #7C5CFC, #00D4FF)',
+                }}
+              />
+            </div>
+            <div className="flex justify-between mt-1.5">
+              <span className="text-[10px]" style={{ color: theme.text.muted }}>0%</span>
+              <span className="text-[10px]" style={{ color: theme.text.muted }}>50%</span>
+              <span className="text-[10px]" style={{ color: theme.text.muted }}>100%</span>
+            </div>
+          </motion.div>
+        )}
+
         {/* Plans */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
           {plans.map((plan, i) => {
@@ -188,6 +254,7 @@ const Billing = ({ user, setuser }) => {
                 transition={{ duration: 0.4, delay: i * 0.1 }}
                 whileHover={{ y: -6 }}
                 className="relative flex flex-col rounded-2xl p-6 transition-all"
+                id={plan.planKey === 'premium' ? 'pro-plan' : undefined}
                 style={{
                   background: plan.popular
                     ? "rgba(124,92,252,0.06)"

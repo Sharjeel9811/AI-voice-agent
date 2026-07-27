@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { motion, AnimatePresence } from 'motion/react'
-import { MdBuild, MdCreditCard, MdLogout, MdMenu, MdClose, MdPerson } from 'react-icons/md'
+import { MdBuild, MdCreditCard, MdLogout, MdMenu, MdClose, MdPerson, MdKey } from 'react-icons/md'
 import theme from '../Configs/theme'
 
 const Navbar = ({ user, setuser }) => {
@@ -31,6 +31,7 @@ const Navbar = ({ user, setuser }) => {
   const navItems = [
     { label: 'Builder', path: '/builder', icon: <MdBuild size={16} /> },
     { label: 'Billing', path: '/billing', icon: <MdCreditCard size={16} /> },
+    ...(user?.plan === 'enterprise' ? [{ label: 'API Keys', path: '/api-keys', icon: <MdKey size={16} /> }] : []),
   ]
 
   const handleLogout = async () => {
@@ -205,7 +206,7 @@ const Navbar = ({ user, setuser }) => {
                             color: user?.plan === 'premium' ? theme.accent.primary : theme.text.secondary,
                           }}
                         >
-                          {user?.plan === 'premium' ? 'Premium' : 'Free'}
+                          {user?.plan === 'premium' ? 'Premium' : user?.plan === 'enterprise' ? 'Enterprise' : 'Free'}
                         </span>
                       </div>
                     </motion.div>

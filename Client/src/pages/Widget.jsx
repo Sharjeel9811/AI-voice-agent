@@ -239,6 +239,24 @@ const Widget = () => {
   var initial = name.charAt(0).toUpperCase()
   var showLanding = !hasChatted && messages.length <= 1
 
+  var renderContent = function(text) {
+    var imgRegex = /\[IMG\](.*?)\[\/IMG\]/g
+    var parts = []
+    var lastIndex = 0
+    var match
+    while ((match = imgRegex.exec(text)) !== null) {
+      if (match.index > lastIndex) {
+        parts.push({ type: 'text', content: text.slice(lastIndex, match.index) })
+      }
+      parts.push({ type: 'image', content: match[1] })
+      lastIndex = match.index + match[0].length
+    }
+    if (lastIndex < text.length) {
+      parts.push({ type: 'text', content: text.slice(lastIndex) })
+    }
+    return parts.length ? parts : [{ type: 'text', content: text }]
+  }
+
   return (
     <div style={{ width: '100vw', height: '100vh', display: 'flex', flexDirection: 'column', overflow: 'hidden', margin: 0, padding: 0, background: bg, fontFamily: '-apple-system, BlinkMacSystemFont, sans-serif', position: 'relative' }}>
 
@@ -359,7 +377,15 @@ const Widget = () => {
                         fontSize: 12, lineHeight: 1.55,
                         boxShadow: isUser ? (th.glow ? '0 4px 16px ' + accent + '25' : 'none') : '0 2px 8px rgba(0,0,0,0.08)',
                         border: isUser ? 'none' : '1px solid ' + th.border,
-                      }}>{msg.content}</div>
+                      }}>
+                        {!isUser && renderContent(msg.content).map(function(part, pi) {
+                          if (part.type === 'image') {
+                            return <img key={pi} src={part.content} alt="Sharjeel Adnan" style={{ maxWidth: '100%', borderRadius: 8, marginTop: 6 }} />
+                          }
+                          return <span key={pi}>{part.content}</span>
+                        })}
+                        {isUser && msg.content}
+                      </div>
                     </div>
                   </motion.div>
                 )
