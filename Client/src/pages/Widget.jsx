@@ -422,7 +422,7 @@ const Widget = () => {
                       }}>
                         {!isUser && renderContent(msg.content).map(function(part, pi) {
                           if (part.type === 'image') {
-                            return <img key={pi} src={part.content} alt="Sharjeel Adnan" style={{ maxWidth: '100%', borderRadius: 8, marginTop: 6 }} />
+                            return <img key={pi} src={part.content} alt="Sharjeel Adnan" style={{ maxWidth: '100%', maxHeight: 180, borderRadius: 8, marginTop: 6, objectFit: 'contain', display: 'block' }} />
                           }
                           return <span key={pi}>{part.content}</span>
                         })}
