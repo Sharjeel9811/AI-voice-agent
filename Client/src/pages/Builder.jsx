@@ -48,13 +48,10 @@ const Builder = ({ user, setuser }) => {
   useEffect(() => {
     const fetchConfig = async () => {
       try {
-        const { data } = await axios.get(
+        await axios.get(
           `${import.meta.env.VITE_BACKEND_URL}/api/agent/config`,
           { withCredentials: true }
         )
-        if (data.agent) {
-          setForm((prev) => ({ ...prev, ...data.agent }));
-        }
       } catch (err) {
         console.error('Failed to load config', err)
       }
