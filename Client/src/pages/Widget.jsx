@@ -80,7 +80,13 @@ const Widget = () => {
         const { data } = await axios.get(`${BACKEND_URL}/api/agent/public/${userId}`, { timeout: 5000 })
         if (data.agent) {
           setAgentConfig(data.agent)
-          setMessages([{ role: 'assistant', content: data.agent.welcomeMessage || 'Hi! How can I help you today?' }])
+          var saved = null
+          try { saved = JSON.parse(localStorage.getItem('va_chat_' + userId)) } catch (e) {}
+          if (saved && saved.length > 0) {
+            setMessages(saved)
+          } else {
+            setMessages([{ role: 'assistant', content: data.agent.welcomeMessage || 'Hi! How can I help you today?' }])
+          }
           setStatus('ready')
           try {
             localStorage.setItem('va_agent_' + userId, JSON.stringify(data.agent))
@@ -93,7 +99,13 @@ const Widget = () => {
         try { cached = JSON.parse(localStorage.getItem('va_agent_' + userId)) } catch (e) {}
         if (cached) {
           setAgentConfig(cached)
-          setMessages([{ role: 'assistant', content: cached.welcomeMessage || 'Hi! How can I help you today?' }])
+          var saved = null
+          try { saved = JSON.parse(localStorage.getItem('va_chat_' + userId)) } catch (e) {}
+          if (saved && saved.length > 0) {
+            setMessages(saved)
+          } else {
+            setMessages([{ role: 'assistant', content: cached.welcomeMessage || 'Hi! How can I help you today?' }])
+          }
           setOffline(true)
           setStatus('ready')
         } else {
@@ -107,6 +119,13 @@ const Widget = () => {
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages, appState])
+
+  // Persist messages to localStorage
+  useEffect(() => {
+    if (userId && messages.length > 0) {
+      try { localStorage.setItem('va_chat_' + userId, JSON.stringify(messages)) } catch (e) {}
+    }
+  }, [messages, userId])
 
   useEffect(() => {
     var SR = window.SpeechRecognition || window.webkitSpeechRecognition
